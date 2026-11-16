@@ -1,0 +1,156 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Расписание школы</title><style>
+:root{--bg:#f2f4fa;--ink:#1d2433;--mu:#69718a;--gr:#188a4b;--gb:#e2f6ea;--rd:#c93a3a;--rb:#fdeaea;--wn:#b07800;--wb:#fff4d6;--ac:#4353ff;--ln:#e5e8f2}
+*{box-sizing:border-box}body{margin:0;font:15px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,#4353ff,#7a4dff);color:#fff;padding:16px}header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12.5px;opacity:.9}
+nav{display:flex;gap:6px;padding:10px;background:#fff;position:sticky;top:0;z-index:9;overflow-x:auto;box-shadow:0 2px 8px rgba(20,25,60,.08)}
+nav button,.ch{border:1px solid var(--ln);background:#f6f7fc;color:var(--mu);padding:8px 13px;border-radius:999px;font:600 14px inherit;cursor:pointer;white-space:nowrap}
+nav button.on,.ch.on{background:var(--ac);border-color:var(--ac);color:#fff}
+main{padding:14px 10px 50px;max-width:1150px;margin:0 auto}section{display:none}section.on{display:block}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.ctl label{font-size:13px;color:var(--mu);font-weight:600}
+select,input{padding:9px 11px;border-radius:10px;border:1px solid #d4d9e6;background:#fff;font-size:15px;color:var(--ink)}input{width:100%;margin-bottom:10px}
+.sum{font-weight:600;margin-bottom:10px}.g{color:var(--gr)}.wn{color:var(--wn)}.ac{color:var(--ac);font-weight:700}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+.card,.box{background:#fff;border-radius:14px;padding:13px;box-shadow:0 1px 4px rgba(20,25,60,.07);margin-bottom:10px}
+.card{border-top:6px solid #ccc;margin:0}.rn{font-weight:800;font-size:17px}
+.bd{display:inline-block;margin-top:8px;padding:4px 11px;border-radius:999px;font-size:12.5px;font-weight:700}
+.bd.ok{background:var(--gb);color:var(--gr)}.bd.no{background:var(--rb);color:var(--rd)}.bd.wn{background:var(--wb);color:var(--wn)}
+.li{padding:6px 0;border-top:1px dashed var(--ln);margin-top:6px;font-size:14px}
+.sm{color:var(--mu);font-size:12.5px;font-weight:500}.sm2{font-size:13.5px;margin-top:4px}.pad{padding:2px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.chip{font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:999px;display:inline-flex;gap:5px;align-items:center}
+.chip.ok{background:var(--gb);color:var(--gr)}.chip.no{background:var(--rb);color:var(--rd)}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.wins{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin-top:8px}
+.win{background:#fff;border-radius:12px;padding:9px 11px;border-left:5px solid #ccc;box-shadow:0 1px 3px rgba(20,25,60,.06)}
+.ban{border-radius:14px;padding:14px;font-weight:700;margin-bottom:10px}.ban.ok{background:var(--gb);color:var(--gr)}.ban.no{background:var(--rb);color:var(--rd)}
+.ban .sm2{color:var(--ink);font-weight:500}
+.dh{font-weight:700;color:var(--ac);padding:9px 2px 5px;display:flex;justify-content:space-between}
+.row{display:flex;gap:9px;align-items:baseline;background:#f8f9fe;border-radius:10px;padding:7px 10px;margin-bottom:5px;font-size:14px}
+.row.wnbg{background:var(--wb)}.fx{flex:1}
+.okbg{background:var(--gb)}.wrap{overflow-x:auto;background:#fff;border-radius:14px;box-shadow:0 1px 4px rgba(20,25,60,.07)}
+table{border-collapse:collapse;width:100%;min-width:860px}th,td{border:1px solid var(--ln);padding:6px;font-size:12.5px;text-align:center}
+th{background:#f6f7fc}td.tm{color:var(--mu);background:#fafbff;font-weight:600;white-space:nowrap}
+td.bz{font-weight:600}td.mt{outline:3px solid var(--ac);outline-offset:-3px}td.cf{outline:3px solid #f0a500;outline-offset:-3px}
+footer{max-width:1150px;margin:0 auto;padding:0 12px 30px;color:var(--mu);font-size:12px}
+</style></head><body>
+<header><h1>📚 Расписание школы</h1><p>3 кабинета · 7 учителей · обновлено 17.11.2026 · накладки кабинетов устранены (↪)</p></header>
+<nav><button data-t="p1" class="on">🚪 Кабинеты</button><button data-t="p2">👩‍🏫 Учителя</button><button data-t="p3">🗓 По дням</button></nav>
+<main>
+<div id="err" style="display:none;background:#fff4d6;padding:12px;border-radius:12px">⚠️ Откройте файл в браузере (Chrome/Safari). <span id="errt"></span></div>
+<section id="p1" class="on">
+<div class="ctl"><label>День</label><select id="rd"></select><label>Время</label><select id="rt"></select></div>
+<div id="rsum" class="sum"></div><div id="rcards" class="cards"></div><div id="rchips" class="chips"></div>
+<div class="box" style="margin-top:12px"><b>🕐 Свободные окна кабинетов в этот день</b><div class="sm">Кабинет свободен, когда в нём нет ни одного занятия (с учётом переносов ↪).</div><div id="rwin" class="wins"></div></div>
+</section>
+<section id="p2">
+<div id="tchips" class="chips"></div>
+<div class="ctl"><label>Проверить на</label><select id="td"></select><select id="tt"></select></div>
+<div id="tstat"></div><div class="box"><b>📅 Расписание учителя на неделю</b><div id="thint" class="sm"></div><div id="tweek"></div></div>
+</section>
+<section id="p3">
+<div id="ginfo"></div><div id="gday" class="chips"></div>
+<input id="gs" placeholder="🔍 Поиск ученика или группы по всей неделе">
+<div class="sm" style="margin-bottom:8px">Цвет ячейки — фактический кабинет. ↪ — занятие перенесено в свободный кабинет (наведите курсор). ⚠️ — накладка.</div>
+<div class="wrap"><div id="gtable"></div></div><div id="gres" style="margin-top:10px"></div>
+</section>
+</main>
+<footer>Источник: Ученики и расписание1 (1).xlsx · обновлено 17.11.2026 · работает без интернета.</footer>
+<script>
+const D={"rooms":["Oxford","Cambridge","London"],"teachers":[["Ирина",0],["Анастасия",1],["Игорь",2],["Виктория",2],["Диана",0],["Ирина Анатольевна",0],["Соня",2]],"lessons":[[0,1,"09:00","10:00","Кузнецова Светлана"],[0,1,"10:00","11:00","группа 2.2"],[0,2,"10:00","11:00","Арина Вовченко"],[0,3,"10:00","11:00","группа 2.3",0],[0,1,"11:00","12:00","Рехванов Ефим"],[0,2,"11:00","12:00","Андрей"],[0,3,"11:00","12:00","Ева",0],[0,2,"12:00","13:00","Миколайчук Маша"],[0,3,"13:00","14:00","Сагателян Адриан"],[0,5,"16:00","17:00","София (дистант)"],[0,1,"17:00","18:00","Сагателян София"],[0,2,"17:00","18:00","Печенкин"],[0,2,"18:00","19:00","Базаркин Никита"],[0,2,"19:00","20:00","группа 10.2"],[1,0,"09:00","10:00","группа 7.2"],[1,2,"10:00","11:00","Арина Вовченко"],[1,3,"10:00","11:00","Сагателян Авраам",0],[1,0,"11:00","12:00","Рыбинцев Федор"],[1,1,"12:00","13:00","группа 6.4"],[1,0,"15:00","16:00","группа 3.1"],[1,3,"15:00","16:00","Макаренко Максим"],[1,0,"16:00","17:00","группа 5.1"],[1,3,"16:00","17:00","Томашов Сергей"],[1,5,"16:00","17:00","София (дистант)",1],[1,0,"17:00","18:00","группа 7.1"],[1,3,"17:00","18:00","Рада"],[1,4,"18:00","19:00","Группа к.2"],[1,5,"18:00","19:00","Анастасия Коваленко",1],[1,6,"19:00","20:00","Гоша"],[2,0,"09:00","10:00","Мазаев Артем"],[2,1,"09:00","10:00","Кузнецова Светлана"],[2,0,"10:00","11:00","группа 6.2"],[2,1,"10:00","11:00","группа 2.2"],[2,3,"10:00","11:00","Дегтяренко Дмитрий"],[2,0,"11:00","12:00","группа 6.3"],[2,3,"11:00","12:00","Дегтяренко Кирилл"],[2,0,"14:00","15:00","Артур Калимулин"],[2,0,"15:00","16:00","Носачева Александра"],[2,1,"15:00","16:00","группа 2.1"],[2,2,"15:00","16:00","группа 10.3"],[2,0,"16:00","17:00","Фрундин Артем"],[2,1,"16:00","17:00","группа 5.3"],[2,3,"16:30","17:30","группа 4.1"],[2,3,"17:30","18:30","Котова Мария"],[2,2,"18:00","19:00","Троицкий Артём",0],[2,6,"18:00","19:00","Арсений",1],[3,0,"09:00","10:00","группа 7.2"],[3,3,"09:00","10:00","Ева"],[3,0,"10:00","11:00","Мазаев Артем"],[3,2,"10:00","11:00","Арина Вовченко"],[3,3,"10:00","11:00","Сагателян Авраам",1],[3,0,"11:00","12:00","Рыбинцев Федор"],[3,2,"11:00","12:00","Андрей"],[3,1,"12:00","13:00","группа 6.4"],[3,2,"12:00","13:00","Миколайчук Маша"],[3,0,"15:00","16:00","группа 3.1"],[3,0,"16:00","17:00","группа 5.1"],[3,3,"16:00","17:00","Томашов"],[3,0,"17:00","18:00","группа 7.1"],[3,1,"17:00","18:00","Сагателян София"],[3,3,"17:00","18:00","Рада"],[3,2,"18:00","19:00","Базаркин Никита"],[3,6,"18:00","19:00","Гоша",0],[3,2,"19:00","20:00","группа 10.2"],[4,0,"09:00","10:00","группа 6.3"],[4,0,"10:00","11:00","группа 6.2"],[4,3,"10:00","11:00","группа 2.3"],[4,3,"11:00","12:00","Журавлева Аня"],[4,3,"13:00","14:00","Сагателян Адриан"],[4,4,"13:30","14:30","Группа к.2"],[4,0,"14:00","15:00","Святослав",1],[4,3,"14:30","15:30","Котова Мария"],[4,0,"15:00","16:00","Носачева Александра"],[4,1,"15:00","16:00","группа 2.1"],[4,3,"15:30","16:30","Макаренко Максим"],[4,0,"16:00","17:00","Фрундин Артем"],[4,1,"16:00","17:00","группа 5.3"],[4,3,"16:30","17:30","группа 4.1"],[4,2,"17:30","18:30","Матвей Галкин"],[4,6,"18:00","19:00","Арсений",0],[4,4,"19:00","20:00","Марина китайский Дистант"],[5,2,"09:00","10:30","группа 10.1"],[5,1,"09:30","11:00","Филинов Платон"],[5,2,"10:30","11:30","Молостова Ариана"],[5,5,"10:30","11:30","Амелия"],[5,1,"11:00","12:00","Рехванов Ефим"],[5,1,"12:00","13:00","Александр Носенков"],[5,2,"12:00","14:00","группа 8.1"],[5,5,"12:00","13:00","Савелий"],[5,1,"13:00","14:00","Давид Якубов"],[5,5,"13:00","14:00","Софья"],[5,1,"14:00","15:00","Аарон Никитин"],[5,2,"14:00","15:00","группа 10.3"],[5,5,"14:00","15:00","Арсений"],[5,5,"15:00","16:00","Анастасия Коваленко"],[6,4,"11:00","12:00","Наталья"],[6,4,"12:00","13:00","Группа к.1"],[6,6,"12:30","13:30","Костя"]]};
+const DAYS=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'],DS=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const R=D.rooms,C=['#4353ff','#0e9f6e','#e8590c'];
+const T=D.teachers.map((x,i)=>({i:i,n:x[0],h:x[1]}));
+const L=D.lessons.map(a=>({d:a[0],t:a[1],s:a[2],e:a[3],x:a[4],r:a.length>5?a[5]:D.teachers[a[1]][1]}));
+const mv=l=>l.r!==T[l.t].h;
+const m=t=>Number(t.slice(0,2))*60+Number(t.slice(3));
+const hm=x=>String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0');
+const slots=d=>{const o=[];for(let x=d>=5?510:540;x<1200;x+=30)o.push(hm(x));return o;};
+const at=(d,t,i)=>L.find(l=>l.d===d&&l.t===i&&l.s<=t&&t<l.e)||null;
+const inR=(d,r,t)=>L.filter(l=>l.d===d&&l.r===r&&l.s<=t&&t<l.e);
+const dayL=(d,i)=>L.filter(l=>l.d===d&&l.t===i).sort((a,b)=>a.s<b.s?-1:1);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const nm=s=>s.toLowerCase().replace(/ё/g,'е');
+const $=id=>document.getElementById(id);
+function wins(d,f){const o=[],S=slots(d);let st=null;S.forEach((t,i)=>{const b=f(t);if(!b&&st===null)st=t;if(b&&st!==null){o.push(st+'–'+t);st=null;}if(i===S.length-1&&st!==null)o.push(st+'–'+hm(m(t)+30));});return o;}
+const now=new Date(),gd=[6,0,1,2,3,4,5][now.getDay()];
+let gt=slots(gd)[0];
+slots(gd).forEach(t=>{if(m(t)<=now.getHours()*60+now.getMinutes())gt=t;});
+function fillDay(s,v){s.innerHTML=DAYS.map((d,i)=>'<option value="'+i+'"'+(i==v?' selected':'')+'>'+d+'</option>').join('');}
+function fillTime(s,d,v){const S=slots(d);if(S.indexOf(v)<0)v=S[0];s.innerHTML=S.map(t=>'<option'+(t===v?' selected':'')+'>'+t+'</option>').join('');}
+function rooms(){
+ const d=Number($('rd').value),t=$('rt').value,info=R.map((r,i)=>({i:i,ls:inR(d,i,t)}));
+ $('rsum').innerHTML=DAYS[d]+' · '+t+' — свободно кабинетов: <b class="g">'+info.filter(x=>!x.ls.length).length+'</b> из 3 · свободно учителей: <b class="g">'+T.filter(x=>!at(d,t,x.i)).length+'</b> из 7';
+ $('rcards').innerHTML=info.map(o=>{const i=o.i,ls=o.ls;let b;
+  if(!ls.length){const nx=slots(d).filter(x=>x>=t&&inR(d,i,x).length)[0],n0=nx?inR(d,i,nx)[0]:null;
+   b='<span class="bd ok">✓ Свободен</span><div class="sm">'+(n0?'следующее занятие: '+nx+' — '+esc(n0.x)+' ('+esc(T[n0.t].n)+')':'до конца дня свободен')+'</div>';}
+  else{const nf=slots(d).filter(x=>x>=t&&!inR(d,i,x).length)[0];
+   b=(ls.length>1?'<span class="bd wn">⚠️ Накладка: '+ls.length+'</span>':'<span class="bd no">✕ Занят</span>')+ls.map(l=>'<div class="li"><b>'+esc(l.x)+'</b> <span class="sm">'+l.s+'–'+l.e+'</span><br><span class="ac">👩‍🏫 '+esc(T[l.t].n)+'</span>'+(mv(l)?' <span class="ac">↪ из '+R[T[l.t].h]+'</span>':'')+'</div>').join('')+'<div class="sm">'+(nf?'освободится с '+nf:'занят до конца дня')+'</div>';}
+  return '<div class="card" style="border-top-color:'+C[i]+'"><div class="rn" style="color:'+C[i]+'">'+R[i]+'</div>'+b+'</div>';}).join('');
+ $('rchips').innerHTML=T.map(x=>{const l=at(d,t,x.i);return '<span class="chip '+(l?'no':'ok')+'"><span class="dot" style="background:'+C[x.h]+'"></span>'+(l?'✕':'✓')+' '+esc(x.n)+(l?' <span class="sm">· '+esc(l.x)+'</span>':'')+'</span>';}).join('');
+ $('rwin').innerHTML=R.map((r,i)=>{const w=wins(d,x=>inR(d,i,x).length);return '<div class="win" style="border-left-color:'+C[i]+'"><b>'+r+'</b><div class="'+(w.length?'g':'sm')+'">'+(w.length?w.join(', '):'свободных окон нет')+'</div></div>';}).join('');
+}
+let cur=0;
+function tchips(){
+ $('tchips').innerHTML=T.map(x=>'<button class="ch '+(x.i===cur?'on':'')+'" data-i="'+x.i+'"><span class="dot" style="background:'+C[x.h]+'"></span>'+esc(x.n)+' <span class="sm">· '+R[x.h]+'</span></button>').join('');
+ document.querySelectorAll('#tchips .ch').forEach(b=>b.onclick=()=>{cur=Number(b.dataset.i);tchips();teach();});
+}
+function teach(){
+ const d=Number($('td').value),t=$('tt').value,x=T[cur],l=at(d,t,cur);
+ if(l){const nf=slots(d).filter(s=>s>=t&&!at(d,s,cur))[0];
+  $('tstat').innerHTML='<div class="ban no">⛔ '+esc(x.n)+' — занят(а) ('+DS[d]+' '+t+')<div class="sm2">'+esc(l.x)+', '+l.s+'–'+l.e+', кабинет <b>'+R[l.r]+'</b>'+(mv(l)?' <span class="ac">↪ перенесено из '+R[x.h]+'</span>':'')+(nf?' · освободится с '+nf:' · до конца дня')+'</div></div>';}
+ else{const oth=inR(d,x.h,t),w=wins(d,s=>at(d,s,cur));
+  $('tstat').innerHTML='<div class="ban ok">✅ '+esc(x.n)+' — свободен/свободна ('+DS[d]+' '+t+')<div class="sm2">'+(oth.length?'⚠️ Но кабинет '+R[x.h]+' занят: '+oth.map(o=>esc(T[o.t].n)+' — '+esc(o.x)+' ('+o.s+'–'+o.e+')').join('; '):'Кабинет '+R[x.h]+' тоже свободен.')+'</div><div class="sm2">Свободные окна: '+(w.length?w.join(', '):'нет')+'</div></div>';}
+ let tot=0,h='';
+ DAYS.forEach((dn,di)=>{const ls=dayL(di,cur),hrs=ls.reduce((s,l)=>s+(m(l.e)-m(l.s))/60,0);tot+=hrs;
+  h+='<div class="dh">'+dn+'<span class="sm">'+(ls.length?ls.length+' зан. · '+hrs+' ч':'')+'</span></div>';
+  if(!ls.length){h+='<div class="sm pad">Нет занятий</div>';return;}
+  ls.forEach(l=>{const par=[];for(let s=m(l.s);s<m(l.e);s+=30)inR(di,l.r,hm(s)).forEach(o=>{if(o.t!==cur)par.push(T[o.t].n+': '+o.x);});
+   h+='<div class="row'+(par.length?' wnbg':'')+'"><b>'+l.s+'–'+l.e+'</b> <span class="fx">'+esc(l.x)+(mv(l)?' <span class="ac">↪ из '+R[x.h]+'</span>':'')+(par.length?' <span class="wn">⚠️ '+esc(Array.from(new Set(par)).join('; '))+'</span>':'')+'</span> <span style="color:'+C[l.r]+';font-weight:700">'+R[l.r]+'</span></div>';});});
+ $('thint').textContent=x.n+' — основной кабинет '+R[x.h]+'. За неделю: '+tot+' ч. ↪ — занятие перенесено в другой кабинет.';
+ $('tweek').innerHTML=h;
+}
+let gday=gd;
+const ORD=T.slice().sort((a,b)=>a.h-b.h);
+function gdays(){
+ $('gday').innerHTML=DAYS.map((d,i)=>'<button class="ch '+(i===gday?'on':'')+'" data-d="'+i+'">'+d+'</button>').join('');
+ document.querySelectorAll('#gday .ch').forEach(b=>b.onclick=()=>{gday=Number(b.dataset.d);gdays();grid();});
+}
+function grid(){
+ const q=nm($('gs').value.trim()),S=slots(gday),skip={};
+ let h='<table><thead><tr><th rowspan="2">Время</th>'+R.map((r,i)=>'<th colspan="'+T.filter(x=>x.h===i).length+'" style="color:'+C[i]+';border-bottom:2px solid '+C[i]+'">'+r+'</th>').join('')+'</tr><tr>'+ORD.map(x=>'<th class="sm">'+esc(x.n)+'</th>').join('')+'</tr></thead><tbody>';
+ S.forEach(t=>{h+='<tr><td class="tm">'+t+'</td>';
+  ORD.forEach(x=>{if(skip[x.i]>0){skip[x.i]--;return;}
+   const l=at(gday,t,x.i);
+   if(!l){h+='<td></td>';return;}
+   let n=1;const i0=S.indexOf(t);
+   while(i0+n<S.length&&at(gday,S[i0+n],x.i)===l)n++;
+   skip[x.i]=n-1;
+   const mt=q&&nm(l.x).indexOf(q)>=0,cf=inR(gday,l.r,t).length>1;
+   h+='<td rowspan="'+n+'" class="bz'+(mt?' mt':'')+(cf&&!mt?' cf':'')+'" style="background:'+C[l.r]+'14;border-left:4px solid '+C[l.r]+'"'+(mv(l)?' title="Перенесено: '+R[x.h]+' → '+R[l.r]+'"':'')+'>'+(cf&&!mt?'⚠️ ':'')+(mv(l)?'↪ ':'')+esc(l.x)+'</td>';});
+  h+='</tr>';});
+ $('gtable').innerHTML=h+'</tbody></table>';
+ if(!q){$('gres').innerHTML='';return;}
+ const res=[];
+ DAYS.forEach((dn,di)=>L.filter(l=>l.d===di&&nm(l.x).indexOf(q)>=0).sort((a,b)=>a.s<b.s?-1:1).forEach(l=>res.push(l)));
+ $('gres').innerHTML=res.length?'<div class="sum">Найдено занятий: '+res.length+'</div>'+res.map(l=>'<div class="row"><b class="ac">'+DS[l.d]+'</b> <b>'+l.s+'–'+l.e+'</b> <span class="fx">'+esc(l.x)+'</span> <span class="sm">'+R[l.r]+(mv(l)?' ↪':'')+' · '+esc(T[l.t].n)+'</span></div>').join(''):'<div class="card sm">Ничего не найдено.</div>';
+}
+function info(){
+ const ms=L.filter(mv).sort((a,b)=>a.d-b.d||(a.s<b.s?-1:1)),cf=[];
+ DAYS.forEach((dn,di)=>R.forEach((r,ri)=>slots(di).forEach(t=>{const ls=inR(di,ri,t);if(ls.length>1)cf.push('<div class="li sm2"><b>'+DS[di]+' '+t+' · '+r+'</b>: '+ls.map(l=>esc(T[l.t].n)+' — '+esc(l.x)).join(' ⇄ ')+'</div>');})));
+ $('ginfo').innerHTML='<div class="box '+(cf.length?'':'okbg')+'"><b class="'+(cf.length?'wn':'g')+'">'+(cf.length?'⚠️ Накладки: '+cf.length:'✅ Накладок кабинетов нет')+'</b>'+cf.join('')+'<div class="sm2">Перенесено в свободные кабинеты: <b>'+ms.length+'</b> занятий (↪). Время и учитель не менялись.</div>'+ms.map(l=>'<div class="li sm2"><b>'+DS[l.d]+' '+l.s+'–'+l.e+'</b> · '+esc(l.x)+' ('+esc(T[l.t].n)+'): <s>'+R[T[l.t].h]+'</s> → <b style="color:'+C[l.r]+'">'+R[l.r]+'</b></div>').join('')+'<div class="li sm">Амелия, Софья и Савелий — ученики Ирины Анатольевны, из расписания Сони (Сб) удалены.</div></div>';
+}
+function boot(){
+ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));document.querySelectorAll('main>section').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.t).classList.add('on');});
+ fillDay($('rd'),gd);fillTime($('rt'),gd,gt);
+ $('rd').onchange=()=>{fillTime($('rt'),Number($('rd').value),$('rt').value);rooms();};
+ $('rt').onchange=rooms;
+ fillDay($('td'),gd);fillTime($('tt'),gd,gt);
+ $('td').onchange=()=>{fillTime($('tt'),Number($('td').value),$('tt').value);teach();};
+ $('tt').onchange=teach;
+ $('gs').oninput=grid;
+ tchips();gdays();info();rooms();teach();grid();
+}
+try{boot();}catch(e){$('err').style.display='block';$('errt').textContent=e.message;}
+</script></body></html>
